@@ -45,6 +45,14 @@
       "helpMarkDown": "The environment password"
     },
     {
+      "name": "tenantId",
+      "type": "string",
+      "label": "Tenant Id",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Tenant ID to use for creating the authentication token, which is required for client Id and client secret authentication type."
+    },
+    {
       "name": "sourceInstanceName",
       "type": "string",
       "label": "Source Instance Name",

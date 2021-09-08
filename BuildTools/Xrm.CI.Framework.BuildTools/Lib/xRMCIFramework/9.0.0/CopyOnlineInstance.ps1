@@ -14,7 +14,8 @@ param(
 [bool]$WaitForCompletion = $false,
 [int]$SleepDuration = 3,
 [string]$PSModulePath,
-[string]$AzureADModulePath
+[string]$AzureADModulePath,
+[string]$TenantId
 )
 
 $ErrorActionPreference = "Stop"
@@ -33,6 +34,7 @@ Write-Verbose "WaitForCompletion = $WaitForCompletion"
 Write-Verbose "SleepDuration = $SleepDuration"
 Write-Verbose "PSModulePath = $PSModulePath"
 Write-Verbose "AzureADModulePath = $AzureADModulePath"
+Write-Verbose "TenantId = $TenantId"
 
 #Script Location
 $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
@@ -85,12 +87,12 @@ if ($SecurityGroupName)
 {
 	if ($AzureADModulePath)
     {
-        Write-Verbose "Importing Module AzureAD" 
+        Write-Verbose "Importing Module AzureAD"
 	    Import-Module "$AzureADModulePath\AzureAD.psd1"
 	    Write-Verbose "Imported Module AzureAD"
 
         Connect-AzureAD -Credential $Cred
-	
+
 	    $group = Get-AzureADGroup -Filter "DisplayName eq '$SecurityGroupName'"
 
 	    if ($group)
@@ -115,7 +117,7 @@ if ($FriendlyName)
 }
 else
 {
-    Write-Verbose "Setting friendly name to $($targetInstance.FriendlyName)"   
+    Write-Verbose "Setting friendly name to $($targetInstance.FriendlyName)"
     $FriendlyName = $targetInstance.FriendlyName
 }
 
@@ -132,8 +134,19 @@ if ($SecurityGroupId)
 
 $copyInfo = New-CrmInstanceCopyRequestInfo @CopyParams
 
+$CopyInstanceParams = @{
+    ApiUrl = $ApiUrl
+    Credential = $Cred
+    CopyInstanceRequestDetails = $copyInfo
+    SourceInstanceIdToCopy = $sourceInstance.Id
+}
 
-$operation = Copy-CrmInstance -ApiUrl $ApiUrl -Credential $Cred -CopyInstanceRequestDetails $copyInfo -SourceInstanceIdToCopy $sourceInstance.Id
+if ($TenantId)
+{
+	$CopyInstanceParams.TenantId = "$TenantId"
+}
+
+$operation = Copy-CrmInstance @CopyInstanceParams
 
 if ($operation.Errors.Count -gt 0)
 {
