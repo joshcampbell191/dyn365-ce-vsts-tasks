@@ -42,11 +42,11 @@ Write-Verbose "Script Path: $scriptPath"
 & "$scriptPath\SetTlsVersion.ps1"
 
 #Load Online Management Module
-$xrmOnlineModule = $scriptPath + "\Microsoft.Xrm.OnlineManagementAPI.dll"
+$xrmOnlineModule = $scriptPath + "\Microsoft.Xrm.OnlineManagementAPI.psd1"
 
 if ($PSModulePath)
 {
-	$xrmOnlineModule = $PSModulePath + "\Microsoft.Xrm.OnlineManagementAPI.dll"
+	$xrmOnlineModule = $PSModulePath + "\Microsoft.Xrm.OnlineManagementAPI.psd1"
 }
 
 Write-Verbose "Importing Online Management Module: $xrmOnlineModule"
@@ -85,12 +85,12 @@ if ($SecurityGroupName)
 {
 	if ($AzureADModulePath)
     {
-        Write-Verbose "Importing Module AzureAD" 
+        Write-Verbose "Importing Module AzureAD"
 	    Import-Module "$AzureADModulePath\AzureAD.psd1"
 	    Write-Verbose "Imported Module AzureAD"
 
         Connect-AzureAD -Credential $Cred
-	
+
 	    $group = Get-AzureADGroup -Filter "DisplayName eq '$SecurityGroupName'"
 
 	    if ($group)
@@ -115,7 +115,7 @@ if ($FriendlyName)
 }
 else
 {
-    Write-Verbose "Setting friendly name to $($targetInstance.FriendlyName)"   
+    Write-Verbose "Setting friendly name to $($targetInstance.FriendlyName)"
     $FriendlyName = $targetInstance.FriendlyName
 }
 
